@@ -116,3 +116,66 @@ yhat_prob = LR.predict_proba(x_test)
 
 log_loss(y_test,yhat_prob)
 ```
+
+## Classification
+- Supervised ML method, uses fully trained models to predict labels on new data
+- labels form a categorical variable with discrete values
+- common classification algorithm: naive bayes, logistic regression, decision trees, KNN, Support Vector Machines, NN
+- Multiclass classifier: Logistic Regression, Decision Trees, KNN
+- Strategies to entend binary classifiers to multiclass classifier: One-versus-all, One-versus-one
+
+**One-Versus-All**
+-use one binary classifier for each class label (binary prediction for every data point for a one-versus-the-rest classifier)
+
+**One-Versus-One**
+-use binary classifier on all possible pairs of classes
+-the final class scheme is determined by a voting scheme (popularity, weighted vote)
+
+```
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.multiclass import OneVsOneClassifier
+from sklearn.metrics import accuracy_score
+%matplotlib inline
+
+df = pd.read_csv('link')
+
+# preprocess
+# select and standardize continous numerical features 
+continous_column = df.select_dtype(include=['float64']).columns.tolist()
+continous_std = StandardScaler.fit_transform(df[continous_column])
+# combine with original dataset
+df_std = pd.DataFrame(continous_std,columns=StandardScaler.get_feature_names_out(continuous_column))
+df_scaled = pd.concat([df.drop(columns=continous_column),df_std],axis=1)
+
+# one-hot encoding
+# select all categorical column (except target column)
+categorical_column = df_scaled.select_dtypes(include=['object']).columns.tolist()
+# apply one-hot encoding
+encoder = OneHotEncoder(sparse_output=False,drop='first')
+encoded_std = encoder.fit_transform(df_scaled[categorical_column])
+# combine with original data
+df_encoded = pd.DataFrame(encoded_std,columns=StandardScaler.get_feature_names_out(categorical_column))
+df_prep = pd.concat([df.drop(columns=categorical_column),df_encoded],axis=1)
+
+# one-hot encoding (target column)
+df_prep['target'] = df_prep['target'].astype('category').cat.codes
+
+# split dataset
+x = df_prep.drop('target',axis=1)
+y = df_prep['target']
+x_train,x_test,y_train,y_test = train_test_split(x,y,test_size=int,random_state=int)
+
+# one vs one classifier
+model_ovo = OneVsOneClassifier(LogisticRegression(max_iter=1000))
+model_ovo.fit(x_train,y_train)
+yhat = model_ovo.predict(x_test)
+
+accuracy_score(y_test,yhat)
+```
+
+## Decision Tree
