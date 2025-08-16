@@ -366,3 +366,214 @@ r2_score(y_test,xgb_yhat)
 ```
 
 ## Clustering
+- hierarchical clustering: divisive: one root cluster iteratively split into smaller child cluster; agglomerative: individual cluster merges into larger parents
+
+### K-Means Clustering
+- divides data into k non-overlapping clusters
+- K-clusters have minimal variances around centroids and maximal dissimilarity between clusters
+- assumes convex clusters and balanced cluster sizes
+- steps:
+1. Initialize the algorithm: select the value of k; randomly select k centroids
+2. Iteratively assign points to cluster and update centroids: compute distance, assign each point to closest centroid; update centroid
+3. Repeat until centroids stabilize or max iterations reached
+- determining k:
+1. Silhouette analysis: Measures cohesion and separation
+2. Elbow method: Plot for different cluster numbers
+3. Davies-Bouldin Index: Measures each cluster's average similarity ratio
+```
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+%matplotlib inline
+
+df = pd.read_csv('link')
+
+# KMeans
+k_mean = KMeans(init="kmeans++",n_clusters=int,n_init=int)
+k_mean.fit(df)
+
+# visualize
+fig = plt.figure(figsize=(6,4))
+colors = plt.cm.table(np.linspace(0,1,len(set(k_mean.labels_))))
+ax = fig.add_subplot(1,1,1)
+for k,col in zip(range(len([[int,int],[int,int],...)))
+  cluster_member = (k_mean.labels_==k)
+  cluster_center = k_mean.cluster_centers_[k]
+  ax.plot(df[cluster_member,0],df[cluster_member,1],'w',markerfacecolor=col,marker='.',ms=int)
+  ax.plot(cluster_center[0],cluster_center[1],'o',markerfacecolor=col,markeredgecolor='k',markersize=6)
+ax.set_title('K_Means')
+ax.set_xticks(())
+ax.set_yticks(())
+plt.show()
+```
+
+### DBSCAN Clustering
+- density-based spatial clustering algorithm
+- create clusters centered around spatial centroids
+- discovers clusters of any shape, size, or density (distinguish noise)
+- every data set is labelled as: (1) core point (2) border point (3) noise point
+
+### HDBSCAN Clustering
+- locally adjusts neighborhood radii for cluster stability
+- combination of agglomerative and density-based clustering
+- steps:
+1. identifying each point as its own cluster
+2. progressively agglomerates clusters into a hierarchy
+3. simplified into a condensed tree
+
+```
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import DBSCAN
+import hdbscan
+
+df = pd.read_csv('link')
+
+# dbscan
+min_sample = int
+eps = float
+dbscan = DBSCAN(eps=eps,min_samples=min_samples,metric='euclidean')
+clusters = dbscan.fit_predict(df)
+
+# hdbscan
+min_samples = None
+min_cluster_size = int
+hdb = HDBSCAN(min_samples=min_samples,min_cluster_size=min_cluster_size,metric='euclidean')
+clusters2 = hdb.fit_predict(df)
+```
+
+## Clustering, Dimension Reduction & Feature Engineering
+- cluserting: helps with feature selection; supports dimension reduction; enhance computational efficiency & scalability
+- dimension reduction: simplifies visualization of high-dimensional clustering; reduce the number of features required [PCA, t-SNE, UMAP]
+
+### Dimension Reduction Algorithms
+1. Principle Component Analysis (PCA)
+- assumes dataset are linearly correlated
+- transforms features into principle components and retain variance
+- principle components: orthogonal to each other; define a new coordinate system; organized in decreasing order of importance; first few components contain most of the information
+```
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+df = pd.read_csv('link')
+
+# pca
+pca = PCA(n_components=int)
+x = pca.fit_transform(df)
+```
+2. T-distributed Stochastic Neighbor Embedding (t-SNE)
+- maps high-dimensional dataset to a lower-dimensional space
+- good at finding clusters in complex, high-dimensional data
+- focuses on preserving similarity of points close together
+- don't scale well and difficult to tune
+3. Uniform Manifold Approximation and Projection (UMAP)
+- constructs a high-dimensional graph representation of the data based on manifold theory
+- scales better than t-SNE
+- preserve the global structure of data
+```
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+import umap.umap_ as UMAP
+from sklearn.preprocessing import StandardScaler
+
+df = pd.read_csv('link')
+
+# t-SNE
+tsne = TSNE(n_components=int,random_state=int,perplexity=int,max_iter=int)
+x_tsne = tsne.fit_transform(df)
+
+#UMAP
+umap_model = UMAP.UMAP(n_components=int,random_state=int,min_dist=float,spread=int,n_jobs=int)
+x_umap = umap_model.fit_transform(df)
+```
+
+## Classification Metrics and Evaluation Techniques
+- train/test split technique is used to evaluate model performance
+- accuracy: ratio of correctly predicted instances
+- confusion matrix: breaks down ground truth instances of a class
+- precision: measures how many predicted positive instances are positive
+- recall: measures how many positive instances are correctly predicted
+- F1-score: combines precision and recall to represent a model's accuracy
+```
+from sklearn.metrics import accuracy_score,classification_report, confusion_matrix
+
+accuracy_score(y_test,yhat)
+classification_report(y_test,yhat)
+confusion_matrix(y_test,yhat)
+```
+
+## Regression Metrics and Evaluation Techniques
+- mean absolute error (MAE): average absolute difference between y_test and predicted y_test
+- mean squared error (MSE): sum of squared difference between y_test and predicted y_test
+- root mean squared error (RMSE): sqaure root of the MSE
+- R^2: amount of variance in the dependent variable that the independent variable can explain
+```
+from sklearn.metrics import mean_squared_error, root_mean_squared_error, mean_absolute_error, r2_score
+
+mean_squared_error(y_test, yhat)
+root_mean_squared_error(y_test, yhat)
+mean_absolute_error(y_test, yhat)
+r2_score(y_test, yhat)
+```
+
+## Unsupervised Model Evaluation: Heuristics and Techniques
+- heuristics:
+1. internal evaluation metrics: rely on input data
+   - Silhouette score: compares cohesion with each cluster; ranges from -1 to 1; higher value indicate better-defined clusters
+   - Davies-Bouldin Index: measures cluster compactness ratio; lower values indicate more distinct clusters
+   - Inertia(K-Means): calculates sum of variance within clusters; lower value suggest more compact clusters
+2. external evaluation metrics: use ground truth labels
+   - Adjusted Rand Index: measures similarity between true labels and outcomes; ranges from -1 to 1 [score 1: perfect alignment; score 0: random clustering; score -1: worse than random performance]
+   - Normalized Mutual Information: quantifies shared information between cluster assignments; ranges from 0 to 1 [score 1: perfect alignment; score 0: no shared information]
+   - Fowlkes-Mallows Index: calculates geometric mean of precision and geometric mean of recall
+3. generalizability or stability evaluation: assess cluster consistency
+4. dimensionality reduction techniques: visualize clustering outcomes
+5. cluster-assisted learning: refines clusters
+6. domain expertise: provides feedback
+```
+from sklearn.metrics import silhouette_score, silhouette_samples, davies_bouldin_score
+
+silhoutte_score(x,labels)
+silhoutte_samples(x,labels)
+```
+
+## Cross-Validation and Advanced Model Validation Techniques
+- optimize model without jeopardizing its ability to predict well on unseen data
+- prevent overfitting by selecting the best configuration by tuning hyperparameters
+- cross-validation algorithm:
+1. split dataset into testing data, training set and validation set
+2. optimize the model by repeatedly training it on training set and measuring its performance on validation set
+3. choose the best set of hyperparameters and evaluate the result on testing data
+- k-fold cross-validation algorithm:
+1. divide the data into k equal-sized folds to be used as validation subsets
+2. for each trial train the model based on remaining k-1 folds
+3. test the model on selected fold and store its model's score
+
+## Regularization in Regression and Classification
+- constrains model complexity by discouraging perfect fitting
+- penalizes larger coefficients by reducing their magnitude
+- Ridge and Lasso are regularized forms of linear regression that differ in their cost functions
+```
+from sklearn.linear_model import LinearRegression, Ridge, Lasso
+
+# ridge
+ridge_reg = Ridge(alpha=int)
+ridge_reg.fit(x,y)
+yhat = ridge_reg.predict(x)
+
+# lasso
+lasso_reg = Lasso(alpha=float)
+lasso_reg.fit(x,y)
+yhat = lasso_reg.predict(x)
+```
+
