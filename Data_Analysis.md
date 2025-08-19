@@ -148,22 +148,49 @@ pipe = Pipeline(input)
 pipe.fit(df[['col1','col2',...]],y)
 ```
 
+## Model Evaluation and Refinement
+- in-sample evaluation only tells us how well our model fit the training data
 
+### train_test_split
+- split dataset into random train and test subset
+```
+from sklearn.model_selection import train_test_split
 
+# split dataset
+x_train, x_test, y_train, y_test = train_test_split(x,y,test_size=<float>,random_state=<int>)
+```
 
+### cross validation
+```
+from sklearn.model_selection import cross_val_score
 
+scores = cross_val_score(<model obj>,x,y,cv=<#sections>)
+```
+```
+from sklearn.model_selection import cross_val_predict
 
+# predict
+yhat = cross_val_predict(<model obj>,x,y,cv=<#sections>)
+```
 
+### ridge regression
+```
+from sklearn.model_selection import Ridge
 
+# create a ridge object and predict
+rm = Ridge(alpha=<float>)
+rm.fit(x,y)
+yhat = rm.predict(x)
+```
 
+### grid search
+- allow us to scan through multiple free parameters, automatically iterating over hyperparameters using cross-validation
+```
+from sklearn.model_selection import GridSearchCV
 
+# set a list of parameters
+paramters = [{'alpha':[0.1,1,10]}]
 
-
-
-
-
-
-
-
-
-
+grid = GridSearchCV(<model>,paramters,cv=<int>)
+grid.fit(x,y)
+```
