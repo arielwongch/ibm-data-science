@@ -122,7 +122,8 @@ app = dash.Dash()
 
 # dash app layout
 app.layout = html.Div(children=[ html.H1('title',style={'textAlign':'center','font-size':40}),
-                                 html.Div(["Input: ",dcc.Input(id='input1',value='default_value1',type='<type>',style={'font-size':35}),],style={'font-size':40}),
+                                 html.Div(["Input: ",dcc.Input(id='input1',value='default_value1',type='<type>',\
+                                 style={'font-size':35}),],style={'font-size':40}),
                                  html.Br(),
                                  html.Br(),
                                  html.Div(dcc.Graph(id='plot1')),
