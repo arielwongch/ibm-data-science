@@ -101,3 +101,33 @@ DROP TABLE <table>
 # delete data from a table
 TRUNCATE TABLE <table> IMMEDIATE
 ```
+
+## Accessing Database using Python
+- concepts of python DB API: connection objects: database connections, manage transactions; cursor objects: database queries, scroll thr result set, retrieve results
+- DB-API
+```
+from dbmodule import connect
+
+# create connection object
+conn = connect('<database>.db')
+
+# create cursor object
+cur = conn.cursor()
+
+# run queries
+cur.execute('<query>')
+result = cur.fetchall()
+
+cur.close()
+```
+- sql magic
+```
+import sqlite3
+conn = sqlite3.connect('<database>.db')
+
+%load_ext sql
+%sql sqlite:///<database>.db
+
+# run queries
+%sql <query>
+```
